@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { CALM_BRAND } from "@/lib/branding/calm";
 import { getTranslate } from "@/lingodotdev/server";
 import { auth } from "@/modules/auth/lib/auth";
 import {
@@ -11,7 +12,7 @@ import {
 } from "@/modules/auth/lib/oauth-client-metadata";
 import { getSession } from "@/modules/auth/lib/session";
 import { Alert, AlertDescription, AlertTitle } from "@/modules/ui/components/alert";
-import { Logo } from "@/modules/ui/components/logo";
+import { CalmLogo } from "@/modules/ui/components/calm-logo";
 import { OAuthConsentActions } from "./components/OAuthConsentActions";
 
 type TSearchParams = Record<string, string | string[] | undefined>;
@@ -61,12 +62,8 @@ const getPublicOAuthClient = async (clientId: string): Promise<TOAuthPublicClien
 
 const OAuthConsentLogo = ({ label }: Readonly<{ label: string }>) => (
   <div className="mb-6 flex justify-center">
-    <Link
-      target="_blank"
-      href="https://formbricks.com?utm_source=formbricks-app&utm_medium=webapp&utm_campaign=oauth_consent_logo"
-      rel="noopener noreferrer"
-      aria-label={label}>
-      <Logo aria-hidden="true" className="h-8 w-auto" />
+    <Link href="/" aria-label={label}>
+      <CalmLogo compact priority className="h-10 w-10" />
     </Link>
   </div>
 );
@@ -90,7 +87,7 @@ const Page = async ({ searchParams }: Readonly<{ searchParams: Promise<TSearchPa
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
         <div className="w-full max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <OAuthConsentLogo label={t("auth.oauth.formbricks_website")} />
+          <OAuthConsentLogo label={CALM_BRAND.productName} />
           <Alert variant="error" role="status">
             <AlertTitle>{t("auth.oauth.invalid_oauth_request")}</AlertTitle>
             <AlertDescription>{t("auth.oauth.invalid_oauth_request_description")}</AlertDescription>
@@ -106,7 +103,7 @@ const Page = async ({ searchParams }: Readonly<{ searchParams: Promise<TSearchPa
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10">
       <div className="w-full max-w-xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <OAuthConsentLogo label={t("auth.oauth.formbricks_website")} />
+        <OAuthConsentLogo label={CALM_BRAND.productName} />
         <div className="space-y-1">
           <p className="text-sm font-medium text-slate-500">{t("auth.oauth.authorization_request")}</p>
           <h1 className="text-2xl font-semibold text-slate-900">

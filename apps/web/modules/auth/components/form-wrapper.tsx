@@ -1,6 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
-import { getTranslate } from "@/lingodotdev/server";
-import { Logo } from "@/modules/ui/components/logo";
+import { CALM_BRAND } from "@/lib/branding/calm";
+import { CalmLogo } from "@/modules/ui/components/calm-logo";
 
 interface FormWrapperProps {
   children: React.ReactNode;
@@ -15,23 +16,33 @@ interface FormWrapperProps {
  * *large* viewport, which pushes a vertically centred card under the browser chrome.
  */
 export const FormWrapper = async ({ children }: Readonly<FormWrapperProps>) => {
-  const t = await getTranslate();
-
   return (
     <div className="flex min-h-dvh w-full flex-col items-center justify-center bg-auth-backdrop px-4 py-8 sm:px-6 sm:py-12">
       <main className="w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl sm:p-8">
         <div className="mb-8 text-center">
           <Link
-            target="_blank"
-            href="https://formbricks.com?utm_source=formbricks-app&utm_medium=webapp&utm_campaign=auth_logo"
-            rel="noopener noreferrer"
-            aria-label={t("common.formbricks_homepage")}
+            href="/"
+            aria-label={CALM_BRAND.productName}
             className="inline-block rounded-md focus-visible:ring-2 focus-visible:ring-brand-dark focus-visible:ring-offset-2 focus-visible:outline-hidden">
-            <Logo aria-hidden="true" className="mx-auto w-40 sm:w-48" />
+            <CalmLogo priority className="mx-auto w-28 sm:w-32" />
           </Link>
+          <p className="mt-3 text-sm font-semibold tracking-wide text-calm-purple-900">
+            {CALM_BRAND.productName}
+          </p>
+          <p className="mt-1 text-xs text-slate-600">Secure survey and feedback platform</p>
         </div>
         {children}
       </main>
+      <footer className="mt-5 flex items-center gap-2 text-xs text-white/75">
+        <Image
+          src={CALM_BRAND.appliedBiosciencesLogoPath}
+          alt="Applied Biosciences"
+          width={24}
+          height={27}
+          className="h-6 w-auto"
+        />
+        <span>{CALM_BRAND.ownershipLine}</span>
+      </footer>
     </div>
   );
 };
