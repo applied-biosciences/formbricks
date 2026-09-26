@@ -2,7 +2,7 @@
 
 import { FileUpIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useMemo, useState } from "react";
+import { type ChangeEvent, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { getV3ApiErrorMessage } from "@/modules/api/lib/v3-client";
 import {
