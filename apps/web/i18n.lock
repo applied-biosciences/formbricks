@@ -54,7 +54,6 @@ checksums:
     auth/login/login_to_your_account: 88f0beb509622ce2f3a22128a9ec9ba5
     auth/login/login_with_email: 8596217b9cec74845ebfe02d6d82e67a
     auth/login/lost_access: 917c4665b99c37377ed522ba53249006
-    auth/login/new_to_formbricks: 1a1d45aca05bb21eb8f795d7d62dc4e3
     auth/login/oauth_account_not_linked_description: 74627dc30666699b21de093d16d83312
     auth/login/oauth_account_not_linked_title: 2eb8e132ed37b3b87c1dec392c224933
     auth/login/oauth_generic_error_description: fb60531d6a8047bc69c7e5b791e78477
@@ -76,7 +75,6 @@ checksums:
     auth/oauth/consent_failed: d6c92762fac20817ff0ec8d9cbc0412c
     auth/oauth/consent_revoked: f1c243aaacd7c466b9986e484b93247b
     auth/oauth/deny_access: ba3ac7dc12f362da277df5c9ba21e752
-    auth/oauth/formbricks_website: 95c2f69c6b6428e1aa6c26f4dd427e22
     auth/oauth/invalid_oauth_request: 02936ced8cd4df963282fe5d413f6900
     auth/oauth/invalid_oauth_request_description: 39322e962c0c20c766ae82d0b8917ebb
     auth/oauth/localhost_redirect_warning: e0368262d25dc98ea02158eebd0066c1
@@ -296,7 +294,6 @@ checksums:
     common/finish: ffa7a10f71182b48fefed7135bee24fa
     common/finished_at: 05d2fa31cf3b2e2255729ec7898240c2
     common/first_name: cf040a5d6a9fd696be400380cc99f54b
-    common/formbricks_homepage: 95a78e9e1812a97221d1f69015561e68
     common/formbricks_version: d9967c797f3e49ca0cae78bc0ebd19cb
     common/full_name: f45991923345e8322c9ff8cd6b7e2b16
     common/gathering_responses: c5914490ed81bd77f13d411739f0c9ef
