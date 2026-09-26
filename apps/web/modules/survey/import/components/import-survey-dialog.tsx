@@ -6,13 +6,10 @@ import { type ChangeEvent, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { getV3ApiErrorMessage } from "@/modules/api/lib/v3-client";
 import {
-  createV3Survey,
-  validateSurveyCreatePayload,
-} from "@/modules/survey/list/lib/v3-surveys-client";
-import {
   getImportedSurveySummary,
   normalizeImportedSurvey,
 } from "@/modules/survey/import/lib/normalize-import";
+import { createV3Survey, validateSurveyCreatePayload } from "@/modules/survey/list/lib/v3-surveys-client";
 import { Alert, AlertDescription, AlertTitle } from "@/modules/ui/components/alert";
 import { Button } from "@/modules/ui/components/button";
 import {
@@ -108,11 +105,7 @@ export const ImportSurveyDialog = ({
       const validation = await validateSurveyCreatePayload(payload);
 
       if (!validation.valid) {
-        setErrors(
-          validation.invalid_params
-            .slice(0, 10)
-            .map((issue) => `${issue.name}: ${issue.reason}`)
-        );
+        setErrors(validation.invalid_params.slice(0, 10).map((issue) => `${issue.name}: ${issue.reason}`));
         return;
       }
 
@@ -220,7 +213,11 @@ export const ImportSurveyDialog = ({
         </DialogBody>
 
         <DialogFooter>
-          <Button type="button" variant="secondary" onClick={() => handleOpenChange(false)} disabled={isImporting}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => handleOpenChange(false)}
+            disabled={isImporting}>
             Cancel
           </Button>
           <Button type="button" onClick={handleImport} loading={isImporting} disabled={!jsonText.trim()}>
