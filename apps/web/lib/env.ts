@@ -426,6 +426,9 @@ const parsedEnv = createEnv({
     E2E_TESTING: z.enum(["1", "0"]).optional(),
     EMAIL_AUTH_DISABLED: z.enum(["1", "0"]).optional(),
     EMAIL_VERIFICATION_DISABLED: z.enum(["1", "0"]).optional(),
+    // Self-hosted instances are invite-only by default. Operators can explicitly opt into the
+    // established public-signup policy, which still requires a multi-organization license.
+    PUBLIC_SIGNUP_ENABLED: z.enum(["1", "0"]).optional(),
     ENCRYPTION_KEY: z.string(),
     ENTERPRISE_LICENSE_KEY: z.string().optional(),
     ENVIRONMENT: z.enum(["production", "staging"]).prefault("production"),
@@ -638,6 +641,7 @@ const parsedEnv = createEnv({
     E2E_TESTING: process.env.E2E_TESTING,
     EMAIL_AUTH_DISABLED: process.env.EMAIL_AUTH_DISABLED,
     EMAIL_VERIFICATION_DISABLED: process.env.EMAIL_VERIFICATION_DISABLED,
+    PUBLIC_SIGNUP_ENABLED: process.env.PUBLIC_SIGNUP_ENABLED,
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
     ENTERPRISE_LICENSE_KEY: process.env.ENTERPRISE_LICENSE_KEY,
     ENVIRONMENT: process.env.ENVIRONMENT,

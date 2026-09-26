@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { CALM_BRAND } from "@/lib/branding/calm";
 import {
   AZURE_OAUTH_ENABLED,
   EMAIL_AUTH_ENABLED,
@@ -27,7 +28,7 @@ import { LoginForm } from "./components/login-form";
 
 export const metadata: Metadata = {
   title: "Login",
-  description: "Open-source Experience Management. Free & open source.",
+  description: `Secure survey and feedback platform by ${CALM_BRAND.companyName}.`,
 };
 
 export const LoginPage = async ({

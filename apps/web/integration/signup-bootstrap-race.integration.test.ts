@@ -21,14 +21,15 @@ import { auth } from "@/modules/auth/lib/auth";
 /*
  * Configure this file's instance as CLOSED, before the imports below bind `@/lib/constants`.
  *
- * `SIGNUP_ENABLED` is `IS_FORMBRICKS_CLOUD || IS_DEVELOPMENT || E2E_TESTING`, read once at module load.
- * CI leaves all three unset, but a developer's own `.env` commonly carries `E2E_TESTING=1` — and with
+ * `SIGNUP_ENABLED` is read once at module load. CI leaves all its opt-in conditions unset, but a
+ * developer's own `.env` commonly carries `E2E_TESTING=1` — and with
  * public sign-up open there is no fresh-instance exception to race, so this file would quietly assert
  * nothing on their machine while staying green on CI. Set the condition rather than inherit it.
  */
 vi.hoisted(() => {
   process.env.IS_FORMBRICKS_CLOUD = "0";
   process.env.E2E_TESTING = "0";
+  process.env.PUBLIC_SIGNUP_ENABLED = "0";
 });
 
 const signUp = (email: string) =>

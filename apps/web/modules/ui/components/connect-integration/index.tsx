@@ -9,7 +9,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { TIntegrationType } from "@formbricks/types/integration";
 import { isExternalImageSrc } from "@/lib/image-hosts";
 import { Button } from "@/modules/ui/components/button";
-import { FormbricksLogo } from "@/modules/ui/components/formbricks-logo";
+import { CalmLogo } from "@/modules/ui/components/calm-logo";
 import { getIntegrationDetails } from "./lib/utils";
 
 interface ConnectIntegrationProps {
@@ -52,7 +52,7 @@ export const ConnectIntegration = ({
       <div className="flex w-1/2 flex-col items-center justify-center rounded-lg bg-white p-8 shadow-sm">
         <div className="flex w-1/2 justify-center -space-x-4">
           <div className="flex size-32 items-center justify-center rounded-full bg-white p-6 shadow-md">
-            <FormbricksLogo />
+            <CalmLogo compact className="h-full w-full" />
           </div>
           <div className="flex size-32 items-center justify-center rounded-full bg-white p-4 shadow-md">
             <Image

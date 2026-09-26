@@ -1,12 +1,11 @@
 "use client";
 
 import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
-import FBLogo from "@/images/formbricks-wordmark.svg";
+import { CALM_BRAND } from "@/lib/branding/calm";
 import { cn } from "@/lib/cn";
 import { Button } from "@/modules/ui/components/button";
+import { CalmLogo } from "@/modules/ui/components/calm-logo";
 
 interface MainNavigationHeaderProps {
   isCollapsed: boolean;
@@ -30,8 +29,6 @@ export const MainNavigationHeader = ({
   homeHref,
   onToggle,
 }: Readonly<MainNavigationHeaderProps>) => {
-  const { t } = useTranslation();
-
   return (
     <div className={cn("flex items-center px-3 pb-4", isCollapsed ? "justify-center" : "justify-between")}>
       {!isCollapsed && (
@@ -41,7 +38,12 @@ export const MainNavigationHeader = ({
             "flex items-center justify-center transition-opacity duration-100",
             isTextVisible ? "opacity-0" : "opacity-100"
           )}>
-          <Image src={FBLogo} width={160} height={30} alt={t("workspace.formbricks_logo")} />
+          <div className="flex items-center gap-2">
+            <CalmLogo compact className="size-8 rounded-md" />
+            <span className="text-sm font-semibold tracking-wide text-calm-purple-950">
+              {CALM_BRAND.productName}
+            </span>
+          </div>
         </Link>
       )}
       <Button

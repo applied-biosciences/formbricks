@@ -1,0 +1,108 @@
+name: CALM Localhost Smoke
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: calm-localhost-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: CALM build and localhost smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --config.platform=linux --config.architecture=x64
+
+      - name: Create local environment
+        run: pnpm dev:setup
+
+      - name: Validate formatting
+        run: pnpm format:check
+
+      - name: Validate translations
+        run: pnpm scan-translations
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test questionnaire importer
+        run: pnpm --filter @formbricks/web exec vitest run modules/survey/import/lib/normalize-import.test.ts
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Production build
+        run: pnpm build --filter=@formbricks/web...
+
+      - name: Start CALM Surveys on localhost
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm go > /tmp/calm-surveys.log 2>&1 &
+          echo $! > /tmp/calm-surveys.pid
+
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3000/health >/tmp/health.json 2>/dev/null; then
+              echo "CALM Surveys is healthy on localhost:3000"
+              cat /tmp/health.json
+              exit 0
+            fi
+
+            if ! kill -0 "$(cat /tmp/calm-surveys.pid)" 2>/dev/null; then
+              echo "CALM Surveys process exited before becoming healthy"
+              cat /tmp/calm-surveys.log
+              exit 1
+            fi
+
+            sleep 5
+          done
+
+          echo "Timed out waiting for CALM Surveys on localhost:3000"
+          cat /tmp/calm-surveys.log
+          exit 1
+
+      - name: Smoke test CALM auth page
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsS http://127.0.0.1:3000/auth/login -o /tmp/login.html
+          grep -F "CALM" /tmp/login.html
+          echo "CALM auth page smoke test passed"
+
+      - name: Smoke test health endpoint
+        run: curl -fsS http://127.0.0.1:3000/health
+
+      - name: Show app log on failure
+        if: failure()
+        run: cat /tmp/calm-surveys.log || true
+
+      - name: Stop local stack
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/calm-surveys.pid ]; then
+            kill "$(cat /tmp/calm-surveys.pid)" 2>/dev/null || true
+          fi
+          pnpm db:down || true
