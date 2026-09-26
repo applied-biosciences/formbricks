@@ -10,10 +10,10 @@ or wrapped in a standard API response:
 ```json
 {
   "data": {
-    "name": "Example questionnaire",
-    "type": "link",
     "blocks": [],
-    "endings": []
+    "endings": [],
+    "name": "Example questionnaire",
+    "type": "link"
   }
 }
 ```
