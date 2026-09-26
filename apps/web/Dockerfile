@@ -92,6 +92,15 @@ RUN apk update && apk upgrade --no-cache \
     && addgroup -S nextjs \
     && adduser -S -u 1001 -G nextjs nextjs
 
+# Prisma's PostgreSQL driver verifies RDS TLS certificates in production. Keep
+# AWS's regional trust chain in the runtime image so verification remains on
+# without relying on a private CA secret or a permissive sslmode workaround.
+RUN apk add --no-cache ca-certificates wget \
+    && wget -q -O /home/nextjs/eu-west-2-bundle.pem \
+      https://truststore.pki.rds.amazonaws.com/eu-west-2/eu-west-2-bundle.pem \
+    && chown nextjs:nextjs /home/nextjs/eu-west-2-bundle.pem \
+    && chmod 444 /home/nextjs/eu-west-2-bundle.pem
+
 WORKDIR /home/nextjs
 
 # Ensure no write permissions are assigned to the copied resources

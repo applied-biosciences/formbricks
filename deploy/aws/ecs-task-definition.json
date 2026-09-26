@@ -1,0 +1,69 @@
+{
+  "family": "calm-surveys-production",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "4096",
+  "memory": "16384",
+  "runtimePlatform": {"cpuArchitecture": "X86_64", "operatingSystemFamily": "LINUX"},
+  "executionRoleArn": "arn:aws:iam::956978958967:role/calm-surveys-ecs-execution",
+  "taskRoleArn": "arn:aws:iam::956978958967:role/calm-surveys-ecs-task",
+  "containerDefinitions": [
+    {
+      "name": "database-init",
+      "image": "postgres:17-alpine",
+      "essential": false,
+      "command": ["sh", "-c", "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -c 'CREATE EXTENSION IF NOT EXISTS vector'"],
+      "secrets": [{"name":"DATABASE_URL","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-database-base-url-aMuE1f"}],
+      "logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"/ecs/calm-surveys","awslogs-region":"eu-west-2","awslogs-stream-prefix":"database-init"}}
+    },
+    {
+      "name": "spicedb-migrate",
+      "image": "authzed/spicedb:v1.52.0",
+      "essential": false,
+      "command": ["datastore", "migrate", "head"],
+      "dependsOn": [{"containerName":"database-init","condition":"SUCCESS"}],
+      "environment": [{"name":"SPICEDB_DATASTORE_ENGINE","value":"postgres"}],
+      "secrets": [{"name":"SPICEDB_DATASTORE_CONN_URI","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-database-base-url-aMuE1f"}],
+      "logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"/ecs/calm-surveys","awslogs-region":"eu-west-2","awslogs-stream-prefix":"spicedb-migrate"}}
+    },
+    {
+      "name": "spicedb",
+      "image": "authzed/spicedb:v1.52.0",
+      "essential": true,
+      "command": ["serve"],
+      "dependsOn": [{"containerName":"spicedb-migrate","condition":"SUCCESS"}],
+      "portMappings":[{"containerPort":50051,"protocol":"tcp"}],
+      "environment": [{"name":"SPICEDB_DATASTORE_ENGINE","value":"postgres"},{"name":"SPICEDB_LOG_FORMAT","value":"json"},{"name":"SPICEDB_TELEMETRY_ENDPOINT","value":""}],
+      "secrets": [{"name":"SPICEDB_DATASTORE_CONN_URI","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-database-base-url-aMuE1f"},{"name":"SPICEDB_GRPC_PRESHARED_KEY","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:authzed_token::"}],
+      "logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"/ecs/calm-surveys","awslogs-region":"eu-west-2","awslogs-stream-prefix":"spicedb"}}
+    },
+    {
+      "name": "hub",
+      "image": "ghcr.io/formbricks/hub:latest",
+      "essential": true,
+      "portMappings":[{"containerPort":8080,"protocol":"tcp"}],
+      "environment":[{"name":"PORT","value":"8080"}],
+      "secrets":[{"name":"DATABASE_URL","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-database-base-url-aMuE1f"},{"name":"API_KEY","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:hub_api_key::"}],
+      "logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"/ecs/calm-surveys","awslogs-region":"eu-west-2","awslogs-stream-prefix":"hub"}}
+    },
+    {
+      "name": "cube",
+      "image": "cubejs/cube:v1.6.6",
+      "essential": true,
+      "portMappings":[{"containerPort":4000,"protocol":"tcp"}],
+      "environment":[{"name":"CUBEJS_DB_TYPE","value":"postgres"},{"name":"CUBEJS_JWT_ISSUER","value":"formbricks-web"},{"name":"CUBEJS_JWT_AUDIENCE","value":"formbricks-cube"},{"name":"CUBEJS_CACHE_AND_QUEUE_DRIVER","value":"memory"}],
+      "secrets":[{"name":"CUBEJS_DB_URL","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-database-base-url-aMuE1f"},{"name":"CUBEJS_API_SECRET","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:cube_api_secret::"}],
+      "logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"/ecs/calm-surveys","awslogs-region":"eu-west-2","awslogs-stream-prefix":"cube"}}
+    },
+    {
+      "name": "web",
+      "image": "956978958967.dkr.ecr.eu-west-2.amazonaws.com/calm-surveys/formbricks:latest",
+      "essential": true,
+      "portMappings":[{"containerPort":3000,"protocol":"tcp"}],
+      "dependsOn":[{"containerName":"spicedb","condition":"START"},{"containerName":"hub","condition":"START"},{"containerName":"cube","condition":"START"}],
+      "environment":[{"name":"NODE_EXTRA_CA_CERTS","value":"/home/nextjs/eu-west-2-bundle.pem"},{"name":"WEBAPP_URL","value":"https://surveys.calmos.io"},{"name":"BETTER_AUTH_URL","value":"https://surveys.calmos.io"},{"name":"NEXTAUTH_URL","value":"https://surveys.calmos.io"},{"name":"REDIS_URL","value":"rediss://master.calm-surveys-production.b1da9p.euw2.cache.amazonaws.com:6379"},{"name":"HUB_API_URL","value":"http://localhost:8080"},{"name":"CUBEJS_API_URL","value":"http://localhost:4000"},{"name":"CUBEJS_JWT_ISSUER","value":"formbricks-web"},{"name":"CUBEJS_JWT_AUDIENCE","value":"formbricks-cube"},{"name":"AUTHZED_ENABLED","value":"true"},{"name":"AUTHZED_ENDPOINT","value":"localhost:50051"},{"name":"AUTHZED_SYSTEM_KEY","value":"formbricks"},{"name":"AUTHZED_INSECURE","value":"true"},{"name":"AUTHZED_CONSISTENCY","value":"fully_consistent"},{"name":"S3_REGION","value":"eu-west-2"},{"name":"S3_BUCKET_NAME","value":"calm-surveys-956978958967-eu-west-2"},{"name":"DISABLE_TELEMETRY","value":"1"}],
+      "secrets":[{"name":"DATABASE_URL","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-database-url-YMZ1w0"},{"name":"ENCRYPTION_KEY","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:encryption_key::"},{"name":"BETTER_AUTH_SECRET","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:better_auth_secret::"},{"name":"CRON_SECRET","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:cron_secret::"},{"name":"AUTHZED_TOKEN","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:authzed_token::"},{"name":"HUB_API_KEY","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:hub_api_key::"},{"name":"CUBEJS_API_SECRET","valueFrom":"arn:aws:secretsmanager:eu-west-2:956978958967:secret:calm-surveys/production/runtime-JE68fu:cube_api_secret::"}],
+      "logConfiguration":{"logDriver":"awslogs","options":{"awslogs-group":"/ecs/calm-surveys","awslogs-region":"eu-west-2","awslogs-stream-prefix":"web"}}
+    }
+  ]
+}
