@@ -126,10 +126,7 @@ export const ImportSurveyDialog = ({
       }
 
       setErrors([
-        getV3ApiErrorMessage(
-          error,
-          "The questionnaire could not be imported. Check the JSON and try again."
-        ),
+        getV3ApiErrorMessage(error, "The questionnaire could not be imported. Check the JSON and try again."),
       ]);
     } finally {
       setIsImporting(false);
@@ -143,8 +140,8 @@ export const ImportSurveyDialog = ({
           <FileUpIcon />
           <DialogTitle>Import questionnaire</DialogTitle>
           <DialogDescription>
-            Import a questionnaire from a current Formbricks v3 survey JSON document or API response.
-            The questionnaire is always created as a draft in this workspace.
+            Import a questionnaire from a current Formbricks v3 survey JSON document or API response. The
+            questionnaire is always created as a draft in this workspace.
           </DialogDescription>
         </DialogHeader>
 
@@ -186,8 +183,8 @@ export const ImportSurveyDialog = ({
             <Alert variant="info" role="status">
               <AlertTitle>{preview.name}</AlertTitle>
               <AlertDescription>
-                {preview.type} survey · {preview.blockCount} blocks · {preview.questionCount} elements.
-                It will be imported as a draft.
+                {preview.type} survey · {preview.blockCount} blocks · {preview.questionCount} elements. It
+                will be imported as a draft.
               </AlertDescription>
             </Alert>
           ) : null}
@@ -207,8 +204,8 @@ export const ImportSurveyDialog = ({
 
           <p className="text-xs leading-5 text-slate-500">
             Existing response data is not imported. Source workspace IDs, survey IDs, timestamps and
-            publication state are ignored. App-survey triggers or targeting references must already
-            exist in the destination workspace or validation will reject the import.
+            publication state are ignored. App-survey triggers or targeting references must already exist in
+            the destination workspace or validation will reject the import.
           </p>
         </DialogBody>
 
