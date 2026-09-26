@@ -142,7 +142,7 @@ Resources:
       Protocol: HTTP
       Port: 3000
       TargetType: ip
-      HealthCheckPath: /api/health
+      HealthCheckPath: /health
       Matcher: { HttpCode: '200-399' }
   HttpListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
