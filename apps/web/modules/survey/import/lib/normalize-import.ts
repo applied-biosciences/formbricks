@@ -42,10 +42,7 @@ function unwrapSurveyDocument(value: unknown): TJsonObject {
  * corresponding create document). Legacy exports that only contain `questions` and no `blocks`
  * need to be migrated by the source Formbricks version first.
  */
-export function normalizeImportedSurvey(
-  raw: unknown,
-  targetWorkspaceId: string
-): TV3CreateSurveyBody {
+export function normalizeImportedSurvey(raw: unknown, targetWorkspaceId: string): TV3CreateSurveyBody {
   const source = unwrapSurveyDocument(raw);
 
   if (typeof source.name !== "string" || source.name.trim().length === 0) {
