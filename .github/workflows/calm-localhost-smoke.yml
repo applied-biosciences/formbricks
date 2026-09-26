@@ -34,6 +34,12 @@ jobs:
       - name: Create local environment
         run: pnpm dev:setup
 
+      - name: Show and apply Prettier corrections in runner
+        shell: bash
+        run: |
+          pnpm exec prettier --write apps/web/modules/survey/import/components/import-survey-dialog.tsx docs/QUESTIONNAIRE_IMPORT.md
+          git diff -- apps/web/modules/survey/import/components/import-survey-dialog.tsx docs/QUESTIONNAIRE_IMPORT.md
+
       - name: Validate formatting
         run: pnpm format:check
 
