@@ -21,6 +21,7 @@ const setTestEnv = (overrides: Record<string, string | undefined> = {}) => {
     AUTHZED_SYSTEM_KEY: undefined,
     AUTHZED_TOKEN: undefined,
     MCP_OAUTH_JWKS_URL: undefined,
+    PUBLIC_SIGNUP_ENABLED: undefined,
     ...overrides,
   };
 };
@@ -123,6 +124,20 @@ describe("env", () => {
     const { env } = await import("./env");
 
     expect(env.DEBUG_SHOW_RESET_LINK).toBe("1");
+  });
+
+  test("accepts the explicit public sign-up opt-in", async () => {
+    setTestEnv({ PUBLIC_SIGNUP_ENABLED: "1" });
+
+    const { env } = await import("./env");
+
+    expect(env.PUBLIC_SIGNUP_ENABLED).toBe("1");
+  });
+
+  test("rejects an invalid public sign-up opt-in", async () => {
+    setTestEnv({ PUBLIC_SIGNUP_ENABLED: "true" });
+
+    await expect(import("./env")).rejects.toThrow("PUBLIC_SIGNUP_ENABLED");
   });
 
   test.each(["http://formbricks:3000/api/auth/jwks", "https://auth.example.com/internal/jwks?version=1"])(

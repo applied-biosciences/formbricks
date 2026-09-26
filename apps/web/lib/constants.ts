@@ -64,7 +64,10 @@ export const SAML_PRODUCT = "formbricks";
 export const SAML_AUDIENCE = "https://saml.formbricks.com";
 export const SAML_PATH = "/api/auth/saml/callback";
 
-export const SIGNUP_ENABLED = IS_FORMBRICKS_CLOUD || IS_DEVELOPMENT || E2E_TESTING;
+// Self-hosted production remains invite-only unless its operator explicitly opts in. The downstream
+// policy still checks the multi-organization license before admitting an uninvited account.
+export const SIGNUP_ENABLED =
+  IS_FORMBRICKS_CLOUD || IS_DEVELOPMENT || E2E_TESTING || env.PUBLIC_SIGNUP_ENABLED === "1";
 export const EMAIL_AUTH_ENABLED = env.EMAIL_AUTH_DISABLED !== "1";
 export const INVITE_DISABLED = env.INVITE_DISABLED === "1";
 export const INVITE_RATE_LIMIT_PER_24_HOURS = env.INVITE_RATE_LIMIT_PER_24_HOURS;

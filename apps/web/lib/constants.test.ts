@@ -30,6 +30,9 @@ const setTestEnv = (overrides: Record<string, string | undefined> = {}) => {
     BETTER_AUTH_URL: undefined,
     NEXTAUTH_SECRET: undefined,
     NEXTAUTH_URL: undefined,
+    IS_FORMBRICKS_CLOUD: "0",
+    E2E_TESTING: "0",
+    PUBLIC_SIGNUP_ENABLED: undefined,
     ...overrides,
   };
 };
@@ -75,6 +78,14 @@ describe("auth secret and URL resolution", () => {
     const { AUTH_SECRET } = await loadConstants();
 
     expect(AUTH_SECRET).toBeUndefined();
+  });
+
+  test("opens self-hosted public sign-up only when explicitly enabled", async () => {
+    setTestEnv({ PUBLIC_SIGNUP_ENABLED: "1" });
+    expect((await loadConstants()).SIGNUP_ENABLED).toBe(true);
+
+    setTestEnv({ PUBLIC_SIGNUP_ENABLED: "0" });
+    expect((await loadConstants()).SIGNUP_ENABLED).toBe(false);
   });
 
   test("prefers BETTER_AUTH_URL over NEXTAUTH_URL, and falls back to it", async () => {
