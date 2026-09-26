@@ -8,9 +8,9 @@ phases:
   build:
     commands:
       - export BUILD_DATABASE_URL='postgresql://build:build@localhost:5432/build?schema=public' BUILD_ENCRYPTION_KEY='build-only-encryption-key-minimum-32-characters' BUILD_REDIS_URL='redis://localhost:6379' BUILD_HUB_API_URL='http://localhost:8080' BUILD_HUB_API_KEY='build-only-hub-key' BUILD_CUBE_URL='http://localhost:4000' BUILD_CUBE_SECRET='build-only-cube-secret' BUILD_SENTRY_TOKEN='' BUILD_POSTHOG_KEY=''
-      - docker build --build-arg NODE_OPTIONS=--max_old_space_size=8192 -f apps/web/Dockerfile --secret id=database_url,env=BUILD_DATABASE_URL --secret id=encryption_key,env=BUILD_ENCRYPTION_KEY --secret id=redis_url,env=BUILD_REDIS_URL --secret id=hub_api_url,env=BUILD_HUB_API_URL --secret id=hub_api_key,env=BUILD_HUB_API_KEY --secret id=cubejs_api_url,env=BUILD_CUBE_URL --secret id=cubejs_api_secret,env=BUILD_CUBE_SECRET --secret id=sentry_auth_token,env=BUILD_SENTRY_TOKEN --secret id=posthog_key,env=BUILD_POSTHOG_KEY -t "$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION" .
+      - docker build --build-arg NODE_OPTIONS=--max_old_space_size=8192 -f apps/web/Dockerfile --secret id=database_url,env=BUILD_DATABASE_URL --secret id=encryption_key,env=BUILD_ENCRYPTION_KEY --secret id=redis_url,env=BUILD_REDIS_URL --secret id=hub_api_url,env=BUILD_HUB_API_URL --secret id=hub_api_key,env=BUILD_HUB_API_KEY --secret id=cubejs_api_url,env=BUILD_CUBE_URL --secret id=cubejs_api_secret,env=BUILD_CUBE_SECRET --secret id=sentry_auth_token,env=BUILD_SENTRY_TOKEN --secret id=posthog_key,env=BUILD_POSTHOG_KEY -t "$REPOSITORY_URI:da0a696c1" .
   post_build:
     commands:
-      - docker push "$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION"
-      - docker tag "$REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION" "$REPOSITORY_URI:latest"
+      - docker push "$REPOSITORY_URI:da0a696c1"
+      - docker tag "$REPOSITORY_URI:da0a696c1" "$REPOSITORY_URI:latest"
       - docker push "$REPOSITORY_URI:latest"
